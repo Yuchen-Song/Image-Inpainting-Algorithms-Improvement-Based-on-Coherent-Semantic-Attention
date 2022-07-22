@@ -1,0 +1,32 @@
+self.CSA_model[0].get_edge(self.Syn,3)
+###get edge
+    def get_edge(self,syn,conv_layers,low_threshold=75,high_threshold=175):
+        pic = (syn + 1) / 2.0
+        grid = torchvision.utils.make_grid(pic, nrow=8, padding=2, pad_value=0,normalize=False, range=None, scale_each=False)
+        pic = grid.mul_(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()#得到原格式 rgb图片
+        pic = cv2.cvtColor(pic, cv2.COLOR_RGB2GRAY)#转 灰度
+        #pic = cv2.GaussianBlur(pic, (3, 3), 0)#高斯模糊        
+        syn_edge = cv2.Laplacian(pic, cv2.CV_8U, ksize=3)
+        syn_edge=torch.from_numpy(syn_edge)
+        if syn.is_cuda:
+            syn_edge = syn_edge.cuda()
+        syn_edge = syn_edge.float()
+        convs = []
+        syn_edge = Variable(syn_edge, requires_grad = False)
+        for id_net in range(conv_layers):
+            conv = nn.Conv2d(1,1,4,2,1, bias=False)
+            conv.weight.data.fill_(1/16)
+            convs.append(conv)
+        lnet = nn.Sequential(*convs)
+        if syn.is_cuda:
+            lnet = lnet.cuda()
+        output = lnet(syn_edge.unsqueeze(0).unsqueeze(0))
+        output=Variable(output, requires_grad = False)
+        self.syn_edge = output.detach().squeeze()
+        return self.syn_edge
+
+###
+
+        syn_edge=(syn_edge-syn_edge.min())/(syn_edge.max()-syn_edge.min())###归一化
+        syn_edge=1-syn_edge#反向
+        mask_float=0.5*mask_float+0.5*syn_edge*mask_float/(mask_float+1e-12)###加权

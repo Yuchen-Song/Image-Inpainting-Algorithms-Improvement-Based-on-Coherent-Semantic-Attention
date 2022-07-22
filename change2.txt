@@ -1,0 +1,5 @@
+CSA.py 146行 加入执行函数get_edge
+CSA_model 35-58加入函数get_edge
+forward 函数 CSAFuntion.apply 加入传递参数 self.edge
+CSAFunction  34左右 加入归一化 加入加权
+backward return 加人 None
