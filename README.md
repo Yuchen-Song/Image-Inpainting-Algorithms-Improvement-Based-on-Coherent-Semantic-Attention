@@ -1,6 +1,6 @@
 # Image Inpainting Algorithms Improvement Based on Coherent Semantic Attention
 This is a repository for our research on image inpainting, which aimed to improve this algorithm.  
-This work was adapted from [origin-CSA](https://github.com/KumapowerLIU/CSA-inpainting)  
+This work was adapted from [original-CSA](https://github.com/KumapowerLIU/CSA-inpainting)  
 And below is their readme file.  
 ****
 
